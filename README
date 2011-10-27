@@ -1,0 +1,70 @@
+BearTrap v0.5
+
+BearTrap is meant to be a portable network defense utility written entirely in
+Ruby.  It opens "trigger" ports on the host that an attacker would connect to.
+When the attacker connects and/or performs some interactions with the trigger
+an alert is raised and the attacker's ip address is potentially blacklisted.
+
+The idea came from listening to the PaulDotCom Security Podcast
+(http://pauldotcom.com/security-weekly/) particularly episodes 203 and 204 as
+the concept of honeyports is described.
+
+BearTrap also uses signed keys and certificates to cryptographically sign the
+offending ip address and sends it to a broadcast address of your choosing.
+
+Dependencies:
+
+Ruby 1.9.x interpreter
+	Installation varies from system to system.
+getopt ruby gem
+	Install with 'gem install getopt'
+
+Installation:
+
+Only necessary steps are to generate keys and certificates for each host
+running BearTrap and modify the sample configuration file (config.yml).  The
+configuration file contains more documentation, should be fairly
+straightforward.
+
+As for the generation of keys and certificates, each host running BearTrap will
+need a private key and accompanying certificate signed by a central CA.  As
+always, keep your keys secret, each host only needs the CA's certificate, their
+own private key and their certificate signed by the CA.
+
+	Sample Commands To Generate Required Keys and Certificates:
+		mkdir ssl
+		cd ssl
+		mkdir ca
+		cd ca
+		openssl genrsa -out ca.key 4096
+		openssl req -new -key ca.key -out ca.csr
+		openssl x509 -req -in ca.csr -out ca.crt -signkey ca.key
+		cd ..
+		mkdir host1
+		cd host1
+		openssl genrsa -out host1.key 4096
+		openssl req -new -key host1.key -out client2.csr
+		openssl x509 -req -in host1.csr -out host1.crt -CA ../ca/ca.crt -CAkey ../ca/ca.key -set_serial 01
+
+Replace host1 with a name for each host running BearTrap and increment the 01
+argument to -set_serial for each key signed.  I'd also recommend using a unique
+name for each host in the CommonName field for future features.
+
+In the above example, you would copy ssl/ca/ca.crt, ssl/host1/host1.key
+ssl/host1/host1.crt to the host it is generated for and update config.yml with
+the correct location of those files.
+
+Usage:
+
+ruby bear_trap.rb -c config.yml
+
+Running as root is recommended, as most blacklisting tools (pfctl, iptables,
+etc) must be ran as root.
+
+Support:
+
+If you have any signficant problems, send me an email at
+chrisbdaemon [at] gmail.com with BearTrap somewhere in the subject.
+
+If you would like to contribute, go ahead and fork the github repo, make your
+changes and send a pull request (see http://help.github.com/fork-a-repo/).
