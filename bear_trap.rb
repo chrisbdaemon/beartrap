@@ -53,14 +53,6 @@ class BearTrap
 		end
 	end
 	
-	def load_distributors
-		@distributors = [ ]
-		
-		@config['distributors'].each do |t|
-			@distributors << Distributor.load( t, { :callback => self } )
-		end
-	end
-	
 	def load_alert_handlers
 		@alert_handlers = [ ]
 		
@@ -97,21 +89,7 @@ class BearTrap
 		
 	end
 	
-	def raise_alert( ip )
-		puts_v "Alert raised for #{ip}"
-		
-		@distributors.each do |d|
-			puts_d "Sending alert via #{d}"
-			d.send_alert( ip )
-		end
-		
-	end
-	
 	def run
-		@distributors.each do |d|
-			@threads << d.start_listening
-		end
-		
 		@triggers.each do |t|
 			@threads << t.set_trigger
 		end
@@ -124,7 +102,7 @@ class BearTrap
 end
 
 def usage
-	$stderr.puts 'BearTrap v0.1-alpha'
+	$stderr.puts 'BearTrap v0.2-alpha'
 	$stderr.puts 'Usage: bear_trap.rb [-vd] -c <config file>'
 	$stderr.puts 'OPTIONS:'
 	$stderr.puts '  --config  -c <config file>    Filename to load configuration from [REQUIRED]'
@@ -148,7 +126,6 @@ config = YAML::load( File.open( $opt[ 'c' ] ) )
 s = BearTrap.new( config )
 
 s.load_triggers
-s.load_distributors
 s.load_alert_handlers
 
 s.run

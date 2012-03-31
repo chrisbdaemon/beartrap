@@ -61,7 +61,7 @@ class FTPTrigger < Trigger
 						if data.match(/^USER /)
 							
 							# Trigger an alert
-							@callback.raise_alert client.peeraddr.last
+							@callback.got_alert client.peeraddr.last
 							client.close
 							
 							break

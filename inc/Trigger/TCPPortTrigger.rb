@@ -60,7 +60,7 @@ class TCPPortTrigger < Trigger
 				# enough to get ip address, exception needs to be caught.
 				begin
 					ip = client.peeraddr.last
-					@callback.raise_alert ip
+					@callback.got_alert ip
 				rescue Errno::EINVAL
 					puts_d "Unable to retrieve peer's IP address, socket closed too soon."
 				end

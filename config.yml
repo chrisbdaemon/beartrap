@@ -61,33 +61,3 @@ alert_handlers:
   #- type: Commandline
   #  block_command: "/sbin/ipfw table 9 add $IP/32"
   #  unblock_command: "/sbin/ipfw table 9 delete $IP/32"
-
-# Distributors send out alerts to other hosts.  Pretty self explanitory
-
-distributors:
-    
-  # Signed Broadcast Distributor
-  # Binds to specified port and sends a packet when an alert is raised to the 
-  # broadcast address of your choosing to allow other hosts running BearTrap to
-  # respond accordingly.  Uses ca-signed certificate to sign/verify packet data.
-  #
-  #
-  # Parameters:
-  #   protocol: Protocol to use to broadcast the alert (UDP is only option
-  #     right now).
-  #   bind: Address to bind to when listening for other alerts.
-  #     Defaults to 0.0.0.0. [OPTIONAL]
-  #   port: Port number to bind to as well as to send alerts out to.
-  #   address: Broadcast address that the alert packet is sent to.
-  #   ca_cert: Certificate of CA.
-  #   cert: Client's certificate, signed by the CA.
-  #   key: Private key.
-  
-  - type: SignedBroadcast
-    protocol: udp
-    bind: 0.0.0.0
-    port: 4321
-    address: 192.168.1.255
-    ca_cert: ssl/ca.crt
-    cert: ssl/bear_trap.crt
-    key: ssl/bear_trap.key
