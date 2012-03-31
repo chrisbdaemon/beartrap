@@ -1,4 +1,4 @@
-BearTrap v0.2-alpha
+BearTrap v0.2-beta
 
 BearTrap is meant to be a portable network defense utility written entirely in
 Ruby.  It opens "trigger" ports on the host that an attacker would connect to.

@@ -102,7 +102,7 @@ class BearTrap
 end
 
 def usage
-	$stderr.puts 'BearTrap v0.2-alpha'
+	$stderr.puts 'BearTrap v0.2-beta'
 	$stderr.puts 'Usage: bear_trap.rb [-vd] -c <config file>'
 	$stderr.puts 'OPTIONS:'
 	$stderr.puts '  --config  -c <config file>    Filename to load configuration from [REQUIRED]'
