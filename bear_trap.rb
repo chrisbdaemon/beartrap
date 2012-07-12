@@ -23,7 +23,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-$:.unshift(File.dirname(__FILE__) + File::SEPARATOR + 'inc')
+$:.unshift(File.dirname(__FILE__) + File::SEPARATOR + 'lib')
 
 require 'yaml'
 require 'getopt/long'
