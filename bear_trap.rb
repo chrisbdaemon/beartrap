@@ -30,7 +30,6 @@ require 'getopt/long'
 
 require 'Common'
 require 'Trigger'
-require 'Distributor'
 require 'AlertHandler'
 
 class BearTrap
