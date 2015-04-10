@@ -1,0 +1,5 @@
+# Ignore vim swapfiles
+*.swp
+
+# Ignore the compiled binary
+beartrap
