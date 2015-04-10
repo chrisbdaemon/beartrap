@@ -1,0 +1,3 @@
+handlers:
+  - type: syslog
+  - type: syslog

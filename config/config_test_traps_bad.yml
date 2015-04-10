@@ -1,0 +1,3 @@
+traps!
+  - type: tcp
+  - type: tcp

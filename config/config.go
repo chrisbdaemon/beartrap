@@ -25,4 +25,60 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package main
+package config
+
+import (
+	"fmt"
+	"io/ioutil"
+	"os"
+
+	"gopkg.in/yaml.v2"
+)
+
+type Params map[string]string
+
+type Config struct {
+	filename string
+	data     []byte
+	file     *os.File
+}
+
+func New(filename string) (*Config, error) {
+	cfg := new(Config)
+
+	data, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+
+	cfg.data = data
+	cfg.filename = filename
+
+	return cfg, nil
+}
+
+func (cfg *Config) TrapParams() ([]Params, error) {
+	paramStruct := struct {
+		Traps []Params
+	}{nil}
+
+	err := yaml.Unmarshal(cfg.data, &paramStruct)
+	if err != nil {
+		return nil, fmt.Errorf("Unable to process traps: %s", err)
+	}
+
+	return paramStruct.Traps, nil
+}
+
+func (cfg *Config) HandlerParams() ([]Params, error) {
+	paramStruct := struct {
+		Handlers []Params
+	}{nil}
+
+	err := yaml.Unmarshal(cfg.data, &paramStruct)
+	if err != nil {
+		return nil, fmt.Errorf("Unable to process handlers: %s", err)
+	}
+
+	return paramStruct.Handlers, nil
+}
