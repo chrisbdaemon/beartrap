@@ -15,4 +15,4 @@ the concept of honeyports is described.
 
 - Beartrap can be build for most any major platform
 - Beartrap is built to let one easily create or customize different trap types
-  or handlers so you can decide what happens when the trap is sprung.c
+  or handlers so you can decide what happens when the trap is sprung
