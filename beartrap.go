@@ -26,3 +26,53 @@
  */
 
 package main
+
+import (
+	"fmt"
+	"log"
+	"os"
+
+	"bitbucket.com/chrisbdaemon/beartrap/config"
+	"github.com/kesselborn/go-getopt"
+)
+
+func main() {
+	options := getOptions()
+	cfg, err := config.New(options["config"].String)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	cfg.TrapParams()
+}
+
+func getOptions() map[string]getopt.OptionValue {
+	optionDefinition := getopt.Options{
+		"Beartrap v0.3 by Chris Benedict <chrisbdaemon@gmail.com>",
+		getopt.Definitions{
+			{"config|c|BEARTRAP_CONFIG", "configuration file", getopt.Required, ""},
+		},
+	}
+
+	options, _, _, err := optionDefinition.ParseCommandLine()
+
+	help, wantsHelp := options["help"]
+
+	if err != nil || wantsHelp {
+		exit_code := 0
+
+		switch {
+		case wantsHelp && help.String == "usage":
+			fmt.Print(optionDefinition.Usage())
+		case wantsHelp && help.String == "help":
+			fmt.Print(optionDefinition.Help())
+		default:
+			fmt.Println("**** Error: ", err.Error(), "\n", optionDefinition.Help())
+			exit_code = err.ErrorCode
+		}
+		os.Exit(exit_code)
+	}
+
+	return options
+}
