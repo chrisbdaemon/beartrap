@@ -31,12 +31,18 @@ import (
 	"fmt"
 	"net"
 	"strconv"
+	"strings"
 )
 
 func Int(value string) error {
 	_, err := strconv.Atoi(value)
+
+	if len(strings.TrimSpace(value)) < 1 {
+		return fmt.Errorf("missing value")
+	}
+
 	if err != nil {
-		return fmt.Errorf("Invalid integer: %s", value)
+		return fmt.Errorf("invalid integer: %s", value)
 	}
 
 	return nil
@@ -50,7 +56,7 @@ func Port(value string) error {
 
 	i, _ := strconv.Atoi(value)
 	if i < 1 || i > 65535 {
-		return fmt.Errorf("Invalid port: %s", value)
+		return fmt.Errorf("invalid port: %s", value)
 	}
 
 	return nil
@@ -58,8 +64,13 @@ func Port(value string) error {
 
 func Host(value string) error {
 	_, err := net.ResolveIPAddr("ip", value)
+
+	if len(strings.TrimSpace(value)) < 1 {
+		return fmt.Errorf("missing host")
+	}
+
 	if err != nil {
-		return fmt.Errorf("Invalid host: %s", value)
+		return fmt.Errorf("invalid host: %s", value)
 	}
 
 	return nil
