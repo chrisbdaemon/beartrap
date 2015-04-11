@@ -33,44 +33,44 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestValidateInt(t *testing.T) {
+func TestInt(t *testing.T) {
 	var err error
 
-	err = ValidateInt("12")
+	err = Int("12")
 	assert.NoError(t, err)
 
-	err = ValidateInt("abc")
+	err = Int("abc")
 	assert.Error(t, err)
 }
 
-func TestValidatePort(t *testing.T) {
+func TestPort(t *testing.T) {
 	var err error
 
 	// valid
-	err = ValidatePort("8080")
+	err = Port("8080")
 	assert.NoError(t, err)
 
 	// too low
-	err = ValidatePort("-12")
+	err = Port("-12")
 	assert.Error(t, err)
 
 	// too high
-	err = ValidatePort("92162")
+	err = Port("92162")
 	assert.Error(t, err)
 
 	// invalid int
-	err = ValidatePort("two")
+	err = Port("two")
 	assert.Error(t, err)
 }
 
-func TestValidateHost(t *testing.T) {
+func TestHost(t *testing.T) {
 	var err error
 
 	// valid
-	err = ValidateHost("8.8.8.8")
+	err = Host("8.8.8.8")
 	assert.NoError(t, err)
 
 	// first octet too high
-	err = ValidateHost("256.21.64.126")
+	err = Host("256.21.64.126")
 	assert.Error(t, err)
 }

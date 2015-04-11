@@ -33,7 +33,7 @@ import (
 	"strconv"
 )
 
-func ValidateInt(value string) error {
+func Int(value string) error {
 	_, err := strconv.Atoi(value)
 	if err != nil {
 		return fmt.Errorf("Invalid integer: %s", value)
@@ -42,8 +42,8 @@ func ValidateInt(value string) error {
 	return nil
 }
 
-func ValidatePort(value string) error {
-	err := ValidateInt(value)
+func Port(value string) error {
+	err := Int(value)
 	if err != nil {
 		return err
 	}
@@ -56,7 +56,7 @@ func ValidatePort(value string) error {
 	return nil
 }
 
-func ValidateHost(value string) error {
+func Host(value string) error {
 	_, err := net.ResolveIPAddr("ip", value)
 	if err != nil {
 		return fmt.Errorf("Invalid host: %s", value)
