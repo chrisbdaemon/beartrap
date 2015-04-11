@@ -33,7 +33,7 @@ import (
 	"os"
 
 	"bitbucket.com/chrisbdaemon/beartrap/config"
-	"github.com/kesselborn/go-getopt"
+	getopt "github.com/kesselborn/go-getopt"
 )
 
 func main() {
@@ -49,8 +49,8 @@ func main() {
 
 func getOptions() map[string]getopt.OptionValue {
 	optionDefinition := getopt.Options{
-		"Beartrap v0.3 by Chris Benedict <chrisbdaemon@gmail.com>",
-		getopt.Definitions{
+		Description: "Beartrap v0.3 by Chris Benedict <chrisbdaemon@gmail.com>",
+		Definitions: getopt.Definitions{
 			{"config|c|BEARTRAP_CONFIG", "configuration file", getopt.Required, ""},
 		},
 	}
