@@ -33,6 +33,7 @@ import (
 	"os"
 
 	"bitbucket.com/chrisbdaemon/beartrap/config"
+	"bitbucket.com/chrisbdaemon/beartrap/trap"
 	getopt "github.com/kesselborn/go-getopt"
 )
 
@@ -44,7 +45,17 @@ func main() {
 		log.Fatal(err)
 	}
 
-	cfg.TrapParams()
+	trapList, err := cfg.TrapParams()
+	if err != nil {
+		log.Fatalf("Error reading traps: %s", err)
+	}
+
+	for _, trapParams := range trapList {
+		_, err := trap.New(trapParams)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
 }
 
 func getOptions() map[string]getopt.OptionValue {
