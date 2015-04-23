@@ -32,8 +32,8 @@ import (
 	"log"
 	"os"
 
-	"bitbucket.com/chrisbdaemon/beartrap/config"
-	"bitbucket.com/chrisbdaemon/beartrap/trap"
+	"github.com/chrisbdaemon/beartrap/config"
+	"github.com/chrisbdaemon/beartrap/trap"
 	getopt "github.com/kesselborn/go-getopt"
 )
 

@@ -33,8 +33,8 @@ import (
 	"strconv"
 	"strings"
 
-	"bitbucket.com/chrisbdaemon/beartrap/config"
-	"bitbucket.com/chrisbdaemon/beartrap/config/validate"
+	"github.com/chrisbdaemon/beartrap/config"
+	"github.com/chrisbdaemon/beartrap/config/validate"
 )
 
 // Trap holds data common to all trap types

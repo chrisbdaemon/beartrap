@@ -30,7 +30,7 @@ package trap
 import (
 	"testing"
 
-	"bitbucket.com/chrisbdaemon/beartrap/config"
+	"github.com/chrisbdaemon/beartrap/config"
 	"github.com/stretchr/testify/assert"
 )
 
