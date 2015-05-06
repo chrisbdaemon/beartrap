@@ -35,34 +35,37 @@ import (
 )
 
 func Int(value string) error {
+	// only checking for error
 	_, err := strconv.Atoi(value)
 
-	if len(strings.TrimSpace(value)) < 1 {
+	switch {
+	case len(strings.TrimSpace(value)) < 1:
 		return fmt.Errorf("missing value")
-	}
-
-	if err != nil {
-		return fmt.Errorf("invalid integer: %s", value)
+	case err != nil:
+		return fmt.Errorf("expecting integer, got '%s'", value)
 	}
 
 	return nil
 }
 
 func Port(value string) error {
-	err := Int(value)
-	if err != nil {
+	// make sure its a valid integer first
+	if err := Int(value); err != nil {
 		return err
 	}
 
+	// already know its good, ignore err
 	i, _ := strconv.Atoi(value)
+
 	if i < 1 || i > 65535 {
-		return fmt.Errorf("invalid port: %s", value)
+		return fmt.Errorf("%s not within range of valid ports (1-65535)", value)
 	}
 
 	return nil
 }
 
 func Host(value string) error {
+	// only care about err
 	_, err := net.ResolveIPAddr("ip", value)
 
 	if len(strings.TrimSpace(value)) < 1 {
@@ -70,7 +73,7 @@ func Host(value string) error {
 	}
 
 	if err != nil {
-		return fmt.Errorf("invalid host: %s", value)
+		return fmt.Errorf("invalid host, expecting IP address got '%s'", value)
 	}
 
 	return nil

@@ -29,9 +29,7 @@ package trap
 
 import (
 	"fmt"
-	"log"
 	"strconv"
-	"strings"
 
 	"github.com/chrisbdaemon/beartrap/config"
 	"github.com/chrisbdaemon/beartrap/config/validate"
@@ -40,37 +38,29 @@ import (
 // Trap holds data common to all trap types
 type Trap struct {
 	Severity int
+	params   config.Params
 }
 
 // New takes in a params object and returns a trap
-func New(params config.Params) (*Trap, error) {
+func New(params config.Params) *Trap {
 	trap := new(Trap)
 
-	errors := validParams(params)
-	if len(errors) > 0 {
-		for _, err := range errors {
-			log.Println(err)
-		}
-		return nil, fmt.Errorf("Invalid trap parameters")
-	}
+	trap.params = params
 
+	// will validate later *crosses fingers*
 	trap.Severity, _ = strconv.Atoi(params["severity"])
 
-	return trap, nil
+	return trap
 }
 
-// validParams validates the paramters common to all traps.
-func validParams(params config.Params) []error {
+func (trap *Trap) Validate() []error {
 	errors := []error{}
 
-	typeStr := strings.TrimSpace(params["type"])
-	if len(typeStr) < 1 {
-		errors = append(errors, fmt.Errorf("Missing trap type"))
-	}
-
-	err := validate.Int(params["severity"])
-	if err != nil {
+	switch err := validate.Int(trap.params["severity"]); {
+	case err != nil:
 		errors = append(errors, fmt.Errorf("Invalid severity: %s", err))
+	case trap.Severity < 0:
+		errors = append(errors, fmt.Errorf("Severity cannot be negative"))
 	}
 
 	return errors

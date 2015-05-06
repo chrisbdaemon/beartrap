@@ -40,31 +40,22 @@ func TestNew(t *testing.T) {
 		"severity": "3",
 	}
 
-	trap, err := New(params)
+	trap := New(params)
 	assert.NotNil(t, trap)
-	assert.NoError(t, err)
-
-	params["type"] = ""
-	trap, err = New(params)
-	assert.Nil(t, trap)
-	assert.Error(t, err)
 }
 
 func TestValidate(t *testing.T) {
 	params := config.Params{
-		"type":     "tcp",
 		"severity": "3",
 	}
 
-	errors := validParams(params)
+	trap := New(params)
+	errors := trap.Validate()
 	assert.Equal(t, 0, len(errors))
 
 	// return error for invalid severity
 	params["severity"] = "five"
-	errors = validParams(params)
+	trap = New(params)
+	errors = trap.Validate()
 	assert.Equal(t, 1, len(errors))
-
-	// return error for severity and type
-	errors = validParams(config.Params{})
-	assert.Equal(t, 2, len(errors))
 }

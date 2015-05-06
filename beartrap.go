@@ -45,16 +45,28 @@ func main() {
 		log.Fatal(err)
 	}
 
-	trapList, err := cfg.TrapParams()
+	trapParams, err := cfg.TrapParams()
 	if err != nil {
 		log.Fatalf("Error reading traps: %s", err)
 	}
 
-	for _, trapParams := range trapList {
-		_, err := trap.New(trapParams)
-		if err != nil {
-			log.Fatal(err)
+	errors := make([]error, 0, 0)
+
+	trapCount := len(trapParams)
+
+	// can't use variable as size param in array?!?
+	traps := make([]*trap.Trap, trapCount, trapCount)
+	for i := 0; i < trapCount; i++ {
+		trap := trap.New(trapParams[i])
+		traps[i] = trap
+		errors = append(errors, trap.Validate()...)
+	}
+
+	if len(errors) > 0 {
+		for i := range errors {
+			log.Println(errors[i])
 		}
+		os.Exit(-1)
 	}
 }
 
