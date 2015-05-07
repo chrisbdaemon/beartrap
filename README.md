@@ -1,6 +1,8 @@
 # Beartrap v0.3
 ==============================
 
+[![Build Status](https://drone.io/github.com/chrisbdaemon/beartrap/status.png)](https://drone.io/github.com/chrisbdaemon/beartrap/latest)
+
 Beartrap is meant to be a portable network defense utility written entirely in
 Go.  It opens "trigger" ports on the host that an attacker would connect to.
 When the attacker connects and/or performs some interactions with the trigger
