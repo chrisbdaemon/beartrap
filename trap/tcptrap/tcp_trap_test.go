@@ -25,58 +25,42 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package trap
+package tcptrap
 
 import (
-	"fmt"
-	"strconv"
+	"testing"
 
 	"github.com/chrisbdaemon/beartrap/config"
-	"github.com/chrisbdaemon/beartrap/config/validate"
-	"github.com/chrisbdaemon/beartrap/trap/tcptrap"
+	"github.com/stretchr/testify/assert"
 )
 
-// TrapInterface defines the interface all traps adhere to
-type TrapInterface interface {
-	Validate() []error
-}
+type stubBaseTrap struct{}
 
-// BaseTrap holds data common to all trap types
-type BaseTrap struct {
-	Severity int
-	params   config.Params
-}
-
-// New takes in a params object and returns a trap
-func New(params config.Params) TrapInterface {
-	baseTrap := new(BaseTrap)
-	var trap TrapInterface
-
-	baseTrap.params = params
-
-	switch params["type"] {
-	case "tcp":
-		trap = tcptrap.New(params, baseTrap)
-	default:
-		trap = baseTrap
-	}
-
-	// will validate later *crosses fingers*
-	baseTrap.Severity, _ = strconv.Atoi(params["severity"])
-
-	return trap
-}
-
-// Validate performs validation on the parameters of the trap
-func (trap *BaseTrap) Validate() []error {
-	errors := []error{}
-
-	switch err := validate.Int(trap.params["severity"]); {
-	case err != nil:
-		errors = append(errors, fmt.Errorf("Invalid severity: %s", err))
-	case trap.Severity < 0:
-		errors = append(errors, fmt.Errorf("Severity cannot be negative"))
-	}
-
+func (baseTrap stubBaseTrap) Validate() []error {
+	var errors []error
 	return errors
+}
+
+func TestNew(t *testing.T) {
+	var baseTrap stubBaseTrap
+	params := config.Params{}
+
+	trap := New(params, baseTrap)
+	assert.NotNil(t, trap)
+}
+
+func TestValidate(t *testing.T) {
+	var baseTrap stubBaseTrap
+	params := config.Params{
+		"type": "tcp",
+		"port": "5555",
+	}
+
+	trap := New(params, baseTrap)
+	errors := trap.Validate()
+	assert.Equal(t, 0, len(errors))
+
+	params["port"] = "-100"
+	errors = trap.Validate()
+	assert.Equal(t, 1, len(errors))
 }

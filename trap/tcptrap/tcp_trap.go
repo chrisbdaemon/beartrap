@@ -25,7 +25,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package trap
+package tcptrap
 
 import (
 	"fmt"
@@ -33,49 +33,39 @@ import (
 
 	"github.com/chrisbdaemon/beartrap/config"
 	"github.com/chrisbdaemon/beartrap/config/validate"
-	"github.com/chrisbdaemon/beartrap/trap/tcptrap"
 )
 
-// TrapInterface defines the interface all traps adhere to
-type TrapInterface interface {
+type trapInterface interface {
 	Validate() []error
 }
 
-// BaseTrap holds data common to all trap types
-type BaseTrap struct {
-	Severity int
+// TCPTrap contains the details of a TCP trap
+type TCPTrap struct {
+	baseTrap trapInterface
+	port     int
 	params   config.Params
 }
 
-// New takes in a params object and returns a trap
-func New(params config.Params) TrapInterface {
-	baseTrap := new(BaseTrap)
-	var trap TrapInterface
+// New returns a new trap object waiting to be engaged
+func New(params config.Params, baseTrap trapInterface) *TCPTrap {
+	tcptrap := new(TCPTrap)
+	tcptrap.baseTrap = baseTrap
 
-	baseTrap.params = params
+	tcptrap.params = params
+	tcptrap.port, _ = strconv.Atoi(params["port"])
 
-	switch params["type"] {
-	case "tcp":
-		trap = tcptrap.New(params, baseTrap)
-	default:
-		trap = baseTrap
-	}
-
-	// will validate later *crosses fingers*
-	baseTrap.Severity, _ = strconv.Atoi(params["severity"])
-
-	return trap
+	return tcptrap
 }
 
-// Validate performs validation on the parameters of the trap
-func (trap *BaseTrap) Validate() []error {
-	errors := []error{}
+// Validate performs validation on the trap and returns any errors
+func (trap *TCPTrap) Validate() []error {
+	var errors []error
 
-	switch err := validate.Int(trap.params["severity"]); {
-	case err != nil:
-		errors = append(errors, fmt.Errorf("Invalid severity: %s", err))
-	case trap.Severity < 0:
-		errors = append(errors, fmt.Errorf("Severity cannot be negative"))
+	errors = trap.baseTrap.Validate()
+
+	err := validate.Port(trap.params["port"])
+	if err != nil {
+		errors = append(errors, fmt.Errorf("Invalid port: %s", err))
 	}
 
 	return errors

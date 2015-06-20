@@ -55,7 +55,7 @@ func main() {
 	trapCount := len(trapParams)
 
 	// can't use variable as size param in array?!?
-	traps := make([]*trap.Trap, trapCount, trapCount)
+	traps := make([]trap.TrapInterface, trapCount, trapCount)
 	for i := 0; i < trapCount; i++ {
 		trap := trap.New(trapParams[i])
 		traps[i] = trap
