@@ -34,6 +34,8 @@ import (
 	"strings"
 )
 
+// Int takes in a value, ensures it is not empty and contains a valid integer.
+// if either of the checks fails it returns an error
 func Int(value string) error {
 	// only checking for error
 	_, err := strconv.Atoi(value)
@@ -48,6 +50,8 @@ func Int(value string) error {
 	return nil
 }
 
+// Port ensures first the value is a valid integer, if so it checks if it
+// is within the valid port range (1-65535). If it is not valid, returns an error
 func Port(value string) error {
 	// make sure its a valid integer first
 	if err := Int(value); err != nil {
@@ -64,6 +68,7 @@ func Port(value string) error {
 	return nil
 }
 
+// Host validates a host to ensure it is valid. If not, it returns an error
 func Host(value string) error {
 	// only care about err
 	_, err := net.ResolveIPAddr("ip", value)

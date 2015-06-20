@@ -35,14 +35,17 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+// Params holds a list of all the parameters for an element in the configuration file
 type Params map[string]string
 
+// Config contains the datails of the configuration file
 type Config struct {
 	filename string
 	data     []byte
 	file     *os.File
 }
 
+// New takes in a filename, reads the contents into a Config object which is then returned
 func New(filename string) (*Config, error) {
 	cfg := new(Config)
 
@@ -57,6 +60,7 @@ func New(filename string) (*Config, error) {
 	return cfg, nil
 }
 
+// TrapParams returns an array with Params objects populated from the config file for traps
 func (cfg *Config) TrapParams() ([]Params, error) {
 	paramStruct := struct {
 		Traps []Params
@@ -70,6 +74,7 @@ func (cfg *Config) TrapParams() ([]Params, error) {
 	return paramStruct.Traps, nil
 }
 
+// HandlerParams returns an array with Params objects populated from the config file for handlers
 func (cfg *Config) HandlerParams() ([]Params, error) {
 	paramStruct := struct {
 		Handlers []Params

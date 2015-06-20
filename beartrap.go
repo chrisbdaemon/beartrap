@@ -83,7 +83,7 @@ func getOptions() map[string]getopt.OptionValue {
 	help, wantsHelp := options["help"]
 
 	if err != nil || wantsHelp {
-		exit_code := 0
+		exitCode := 0
 
 		switch {
 		case wantsHelp && help.String == "usage":
@@ -92,9 +92,9 @@ func getOptions() map[string]getopt.OptionValue {
 			fmt.Print(optionDefinition.Help())
 		default:
 			fmt.Println("**** Error: ", err.Error(), "\n", optionDefinition.Help())
-			exit_code = err.ErrorCode
+			exitCode = err.ErrorCode
 		}
-		os.Exit(exit_code)
+		os.Exit(exitCode)
 	}
 
 	return options
