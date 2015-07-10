@@ -34,6 +34,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+var baseParams = config.Params{
+	"type": "tcp",
+	"port": "5555",
+	"host": "127.0.0.1",
+}
+
 type stubBaseTrap struct{}
 
 func (baseTrap stubBaseTrap) Validate() []error {
@@ -51,10 +57,7 @@ func TestNew(t *testing.T) {
 
 func TestValidate(t *testing.T) {
 	var baseTrap stubBaseTrap
-	params := config.Params{
-		"type": "tcp",
-		"port": "5555",
-	}
+	params := baseParams
 
 	trap := New(params, baseTrap)
 	errors := trap.Validate()
@@ -63,4 +66,10 @@ func TestValidate(t *testing.T) {
 	params["port"] = "-100"
 	errors = trap.Validate()
 	assert.Equal(t, 1, len(errors))
+
+	params["host"] = "foobar"
+	errors = trap.Validate()
+	assert.Equal(t, 2, len(errors))
 }
+
+// ToDo: Test handleConnection and Start() if possible

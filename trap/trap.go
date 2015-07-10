@@ -36,9 +36,10 @@ import (
 	"github.com/chrisbdaemon/beartrap/trap/tcptrap"
 )
 
-// TrapInterface defines the interface all traps adhere to
-type TrapInterface interface {
+// Interface defines the interface all traps adhere to
+type Interface interface {
 	Validate() []error
+	Start() error
 }
 
 // BaseTrap holds data common to all trap types
@@ -48,9 +49,9 @@ type BaseTrap struct {
 }
 
 // New takes in a params object and returns a trap
-func New(params config.Params) TrapInterface {
+func New(params config.Params) (Interface, error) {
 	baseTrap := new(BaseTrap)
-	var trap TrapInterface
+	var trap Interface
 
 	baseTrap.params = params
 
@@ -58,13 +59,13 @@ func New(params config.Params) TrapInterface {
 	case "tcp":
 		trap = tcptrap.New(params, baseTrap)
 	default:
-		trap = baseTrap
+		return nil, fmt.Errorf("Unknown trap type")
 	}
 
 	// will validate later *crosses fingers*
 	baseTrap.Severity, _ = strconv.Atoi(params["severity"])
 
-	return trap
+	return trap, nil
 }
 
 // Validate performs validation on the parameters of the trap

@@ -29,6 +29,8 @@ package tcptrap
 
 import (
 	"fmt"
+	"log"
+	"net"
 	"strconv"
 
 	"github.com/chrisbdaemon/beartrap/config"
@@ -39,9 +41,40 @@ type trapInterface interface {
 	Validate() []error
 }
 
+// Start opens a TCP socket and alerts on all connections
+func (trap *TCPTrap) Start() error {
+	l, err := net.Listen("tcp", ":"+strconv.Itoa(trap.port))
+	if err != nil {
+		log.Fatalf("Unable to open tcp port %d: %s", trap.port, err)
+	}
+
+	for {
+		conn, err := l.Accept()
+		if err != nil {
+			if ne, ok := err.(net.Error); ok && !ne.Temporary() {
+				log.Println("Error accepting connection:", err)
+			}
+		}
+		handleConnection(conn)
+	}
+}
+
+// Use a slightly simplified connection interface
+// to make testing a little easier
+type simpleConn interface {
+	Close() error
+	RemoteAddr() net.Addr
+}
+
+func handleConnection(c simpleConn) {
+	fmt.Println("Got connection:", c)
+	c.Close()
+}
+
 // TCPTrap contains the details of a TCP trap
 type TCPTrap struct {
 	baseTrap trapInterface
+	host     string
 	port     int
 	params   config.Params
 }
@@ -53,6 +86,7 @@ func New(params config.Params, baseTrap trapInterface) *TCPTrap {
 
 	tcptrap.params = params
 	tcptrap.port, _ = strconv.Atoi(params["port"])
+	tcptrap.host = params["host"]
 
 	return tcptrap
 }
@@ -66,6 +100,11 @@ func (trap *TCPTrap) Validate() []error {
 	err := validate.Port(trap.params["port"])
 	if err != nil {
 		errors = append(errors, fmt.Errorf("Invalid port: %s", err))
+	}
+
+	err = validate.Host(trap.params["host"])
+	if err != nil {
+		errors = append(errors, fmt.Errorf("Invalid host: %s", err))
 	}
 
 	return errors
