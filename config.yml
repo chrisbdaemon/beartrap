@@ -4,6 +4,7 @@ traps:
     port: 8888
     severity: 5
 
+
 handlers:
   - type: syslog
     host: 127.0.0.1

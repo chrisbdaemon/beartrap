@@ -13,6 +13,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/chrisbdaemon/beartrap/alert"
+	"github.com/chrisbdaemon/beartrap/broadcast"
 	"github.com/chrisbdaemon/beartrap/config"
 	"github.com/chrisbdaemon/beartrap/trap"
 	getopt "github.com/kesselborn/go-getopt"
@@ -31,19 +33,34 @@ func main() {
 		log.Fatalf("Error reading traps: %s", err)
 	}
 
-	traps, err := initTraps(trapParams)
+	var broadcast broadcast.Broadcast
+
+	// Hack as fill-in for handler
+	c := make(chan alert.Alert)
+	go func(c chan alert.Alert) {
+		for {
+			a := <-c
+			log.Println(a.Message)
+		}
+	}(c)
+	broadcast.AddReceiver(c)
+
+	// Create and validate traps
+	traps, err := initTraps(trapParams, broadcast)
 	if err != nil {
 		log.Fatalf("Error initializing traps: %s", err)
 	}
 	errors := validateTraps(traps)
 
+	// If validation failed, report and quit,
+	// if not, turn traps on
 	if len(errors) > 0 {
 		displayErrors(errors)
 		os.Exit(-1)
 	} else {
 		startTraps(traps)
 
-		// Hack to let traps run till I build out trap ctrl more
+		// Hack to let traps run till I create a better mainloop
 		for {
 			time.Sleep(500 * time.Second)
 		}
@@ -75,11 +92,11 @@ func startTraps(traps []trap.Interface) {
 
 // initTraps take in a list of trap parameters, creates trap objects
 // that are returned along with any errors generated from validation
-func initTraps(trapParams []config.Params) ([]trap.Interface, error) {
+func initTraps(trapParams []config.Params, d broadcast.Broadcast) ([]trap.Interface, error) {
 	traps := []trap.Interface{}
 
 	for i := range trapParams {
-		trap, err := trap.New(trapParams[i])
+		trap, err := trap.New(trapParams[i], d)
 		if err != nil {
 			return nil, err
 		}

@@ -10,9 +10,14 @@ package trap
 import (
 	"testing"
 
+	"github.com/chrisbdaemon/beartrap/alert"
 	"github.com/chrisbdaemon/beartrap/config"
 	"github.com/stretchr/testify/assert"
 )
+
+type fakeDispatcher struct{}
+
+func (d fakeDispatcher) BroadcastAlert(alert.Alert) {}
 
 func TestNew(t *testing.T) {
 	params := config.Params{
@@ -20,7 +25,7 @@ func TestNew(t *testing.T) {
 		"severity": "3",
 	}
 
-	trap, _ := New(params)
+	trap, _ := New(params, fakeDispatcher{})
 	assert.NotNil(t, trap)
 }
 

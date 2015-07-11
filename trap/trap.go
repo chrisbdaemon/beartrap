@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/chrisbdaemon/beartrap/alert"
 	"github.com/chrisbdaemon/beartrap/config"
 	"github.com/chrisbdaemon/beartrap/config/validate"
 	"github.com/chrisbdaemon/beartrap/trap/tcptrap"
@@ -22,17 +23,24 @@ type Interface interface {
 	Start() error
 }
 
+// Dispatcher provides interface for sending alerts to handlers
+type Dispatcher interface {
+	BroadcastAlert(alert.Alert)
+}
+
 // BaseTrap holds data common to all trap types
 type BaseTrap struct {
 	Severity int
+	Dispatch Dispatcher
 	params   config.Params
 }
 
 // New takes in a params object and returns a trap
-func New(params config.Params) (Interface, error) {
+func New(params config.Params, d Dispatcher) (Interface, error) {
 	baseTrap := new(BaseTrap)
 	var trap Interface
 
+	baseTrap.Dispatch = d
 	baseTrap.params = params
 
 	switch params["type"] {
@@ -46,6 +54,12 @@ func New(params config.Params) (Interface, error) {
 	baseTrap.Severity, _ = strconv.Atoi(params["severity"])
 
 	return trap, nil
+}
+
+// TriggerAlert creates an alert and sends it to the broadcaster
+func (trap *BaseTrap) TriggerAlert(s string) {
+	a := alert.Alert{Message: s}
+	trap.Dispatch.BroadcastAlert(a)
 }
 
 // Validate performs validation on the parameters of the trap

@@ -19,6 +19,26 @@ import (
 
 type trapInterface interface {
 	Validate() []error
+	TriggerAlert(s string)
+}
+
+// Use a slightly simplified connection interface
+// to make testing a little easier
+type simpleConn interface {
+	Close() error
+	RemoteAddr() net.Addr
+}
+
+// New returns a new trap object waiting to be engaged
+func New(params config.Params, baseTrap trapInterface) *TCPTrap {
+	tcptrap := new(TCPTrap)
+	tcptrap.baseTrap = baseTrap
+
+	tcptrap.params = params
+	tcptrap.port, _ = strconv.Atoi(params["port"])
+	tcptrap.host = params["host"]
+
+	return tcptrap
 }
 
 // Start opens a TCP socket and alerts on all connections
@@ -35,19 +55,12 @@ func (trap *TCPTrap) Start() error {
 				log.Println("Error accepting connection:", err)
 			}
 		}
-		handleConnection(conn)
+		trap.handleConnection(conn)
 	}
 }
 
-// Use a slightly simplified connection interface
-// to make testing a little easier
-type simpleConn interface {
-	Close() error
-	RemoteAddr() net.Addr
-}
-
-func handleConnection(c simpleConn) {
-	fmt.Println("Got connection:", c)
+func (trap *TCPTrap) handleConnection(c simpleConn) {
+	trap.baseTrap.TriggerAlert("Received connection from " + c.RemoteAddr().String())
 	c.Close()
 }
 
@@ -57,18 +70,6 @@ type TCPTrap struct {
 	host     string
 	port     int
 	params   config.Params
-}
-
-// New returns a new trap object waiting to be engaged
-func New(params config.Params, baseTrap trapInterface) *TCPTrap {
-	tcptrap := new(TCPTrap)
-	tcptrap.baseTrap = baseTrap
-
-	tcptrap.params = params
-	tcptrap.port, _ = strconv.Atoi(params["port"])
-	tcptrap.host = params["host"]
-
-	return tcptrap
 }
 
 // Validate performs validation on the trap and returns any errors
