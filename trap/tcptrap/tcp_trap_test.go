@@ -22,7 +22,9 @@ var baseParams = config.Params{
 
 type stubBaseTrap struct{}
 
-func (baseTrap stubBaseTrap) Validate() []error {
+func (t stubBaseTrap) TriggerAlert(s string) {}
+
+func (t stubBaseTrap) Validate() []error {
 	var errors []error
 	return errors
 }
