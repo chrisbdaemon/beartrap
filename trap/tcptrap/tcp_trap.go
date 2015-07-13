@@ -29,6 +29,14 @@ type simpleConn interface {
 	RemoteAddr() net.Addr
 }
 
+// TCPTrap contains the details of a TCP trap
+type TCPTrap struct {
+	baseTrap trapInterface
+	host     string
+	port     int
+	params   config.Params
+}
+
 // New returns a new trap object waiting to be engaged
 func New(params config.Params, baseTrap trapInterface) *TCPTrap {
 	tcptrap := new(TCPTrap)
@@ -60,16 +68,9 @@ func (trap *TCPTrap) Start() error {
 }
 
 func (trap *TCPTrap) handleConnection(c simpleConn) {
-	trap.baseTrap.TriggerAlert("Received connection from " + c.RemoteAddr().String())
-	c.Close()
-}
+	defer c.Close()
 
-// TCPTrap contains the details of a TCP trap
-type TCPTrap struct {
-	baseTrap trapInterface
-	host     string
-	port     int
-	params   config.Params
+	trap.baseTrap.TriggerAlert("Received connection from " + c.RemoteAddr().String())
 }
 
 // Validate performs validation on the trap and returns any errors

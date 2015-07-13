@@ -8,6 +8,7 @@
 package tcptrap
 
 import (
+	"net"
 	"testing"
 
 	"github.com/chrisbdaemon/beartrap/config"
@@ -23,11 +24,15 @@ var baseParams = config.Params{
 type stubBaseTrap struct{}
 
 func (t stubBaseTrap) TriggerAlert(s string) {}
-
 func (t stubBaseTrap) Validate() []error {
 	var errors []error
 	return errors
 }
+
+type stubConn struct{}
+
+func (t stubConn) Close() error         { return nil }
+func (t stubConn) RemoteAddr() net.Addr { a, _ := net.InterfaceAddrs(); return a[0] }
 
 func TestNew(t *testing.T) {
 	var baseTrap stubBaseTrap
@@ -54,4 +59,17 @@ func TestValidate(t *testing.T) {
 	assert.Equal(t, 2, len(errors))
 }
 
-// ToDo: Test handleConnection and Start() if possible
+func TestHandleConnection(t *testing.T) {
+	trap := stubTrap()
+	c := stubConn{}
+
+	// Just exercise the code for now
+	trap.handleConnection(c)
+}
+
+func stubTrap() *TCPTrap {
+	var baseTrap stubBaseTrap
+	params := baseParams
+
+	return New(params, baseTrap)
+}
