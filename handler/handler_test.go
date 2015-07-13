@@ -11,17 +11,19 @@ import (
 	"log"
 	"testing"
 
+	"github.com/chrisbdaemon/beartrap/alert"
 	"github.com/chrisbdaemon/beartrap/config"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestNew(t *testing.T) {
+	c := make(chan alert.Alert)
 	params := config.Params{
 		"type":      "syslog",
 		"threshold": "3",
 	}
 
-	handler, _ := New(params)
+	handler, _ := New(params, c)
 	assert.NotNil(t, handler)
 }
 
