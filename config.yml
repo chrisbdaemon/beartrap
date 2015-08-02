@@ -2,26 +2,34 @@
 # multiple types
 
 triggers:
-  
+
   # TCP Port Trigger
   # Listens to specified port for connection, upon full connection the trigger
-  # is fired
-  # 
+  # is fired.
+  #
+  # This particular trigger is deprecated and not recommended. If
+  # a TCP handshake can be spoofed "bad things" can follow.
+  #
   # Parameters:
   #   port: TCP port number to listen to
   #   address: address to bind to
-  
+
    # Common port to scan
- - type: TCPPort
-   port: 8080
-   address: 0.0.0.0
-   
+   #- type: TCPPort
+   #   port: 8080
+   #   address: 0.0.0.0
+
    # Imitate Microsoft terminal services
- - type: TCPPort
-   port: 3389
-   address: 0.0.0.0
-   
+   # - type: TCPPort
+   #   port: 3389
+   #   address: 0.0.0.0
+
    # Use semi-interactive ftp trigger
+   # This trigger very faintly emulates an FTP service, when a USER command
+   # is sent, trigger an alert and block the address.  On all other commands
+   # send a "530 Not logged in." response.
+   #
+   # ** Make sure you change the banner to imitate a legitimate service **
  - type: FTP
    banner: "BearTrap-ftpd Service ready"
 
@@ -29,7 +37,7 @@ triggers:
 # only applies to localhost
 
 alert_handlers:
-  
+
   # Commandline block
   # Use a system command to blacklist IP address, such as adding to a PF table,
   # adding a new rule to iptables, etc..
@@ -41,20 +49,20 @@ alert_handlers:
   #   unblock_command: Reverse of block_command, same details
   #   regexp: regexp string used to sanitize IP address.  Matched characters
   #     will be removed.  Default is /[^\.0-9]/ [OPTIONAL]
-  
+
   # Example: iptables command used to add a rule to drop packets from
   # offending addresses.
   - type: Commandline
     block_command: "/sbin/iptables -A INPUT -s $IP -j DROP"
     unblock_command: "/sbin/iptables -D INPUT -s $IP -j DROP"
-  
+
   # Example: PF using a blacklist table titled "blacklist".  Requires a line
   # in the PF ruleset similar to "block in on $int_if from <blacklist> to any"
   #
   #- type: Commandline
   #  block_command: "/sbin/pfctl -t blacklist -T add $IP"
   #  unblock_command: "/sbin/pfctl -t blacklist -T delete $IP"
-  
+
   # Example: IPFW command used to deny all ip traffic from the offending IP
   # address.  Uses table number 9 below, change table number to suit your
   # environment

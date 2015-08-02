@@ -1,16 +1,16 @@
 # Copyright (c) 2011, chrisbdaemon <chrisbdaemon@gmail.com>
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
-# 
+#
 # Redistributions of source code must retain the above copyright notice, this
 # list of conditions and the following disclaimer.
-# 
+#
 # Redistributions in binary form must reproduce the above copyright notice,
 # this list of conditions and the following disclaimer in the documentation
 # and/or other materials provided with the distribution.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 # IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -24,54 +24,61 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 class CommandlineAlertHandler < AlertHandler
-	
+
 	def initialize( params )
-		
+
 		@parameters = [ { 'name' => 'block_command', 'required' => true },
 		                { 'name' => 'unblock_command', 'required' => true },
 		                { 'name' => 'regexp', 'required' => false } ]
-		
+
 		self.check_parameters( params )
-		
+
 		@block_command    = params[ 'block_command' ]
 		@unblock_command  = params[ 'unblock_command' ]
-		
+
 		if params.keys.include? 'regexp' && params[ 'regexp' ] != nil
 			regexp_str = params[ 'regexp' ]
 		else
 			regexp_str = '[^\.0-9]'
 		end
-		
+
 		@regexp = Regexp.new( regexp_str )
-		
+
 	end
-	
+
 	def handle_alert( address )
-		
+
 		command = self.build_command( @block_command, address )
-		
+
 		puts "Command: #{command}"
-		`#{command}`
-		
+
+		unless $?.success?
+			puts "Command failed with status #{$?.exitstatus}"
+		end
+
 	end
-	
+
 	def unblock_address( address )
-		
+
 		command = self.build_command( @unblock_command, address )
-		
+
 		puts "Command: #{command}"
 		`#{command}`
-		
+
+		unless $?.success?
+			puts "Command failed with status #{$?.exitstatus}"
+		end
+
 	end
-	
+
 	def build_command( command, address )
-		
+
 		if command.match( /\$RAW_IP/ ) != nil
 			return command.gsub( /\$RAW_IP/, address )
 		elsif command.match( /\$IP/ ) != nil
 			return command.gsub( /\$IP/, address.gsub( @regexp, '' ) )
 		end
-		
+
 	end
-	
+
 end
