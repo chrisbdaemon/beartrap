@@ -45,12 +45,12 @@ func (handler *BaseHandler) Start() {
 }
 
 // New takes in a params object and returns a handler
-func New(params config.Params, c chan alert.Alert) (Interface, error) {
+func New(params config.Params, alertChan chan alert.Alert) (Interface, error) {
 	baseHandler := new(BaseHandler)
 	var handler Interface
 
 	baseHandler.params = params
-	baseHandler.receiver = c
+	baseHandler.receiver = alertChan
 
 	switch params["type"] {
 	case "syslog":

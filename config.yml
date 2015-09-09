@@ -7,6 +7,8 @@ traps:
 
 handlers:
   - type: syslog
+    priority: alert
+    proto: tcp
     host: 127.0.0.1
     port: 8080
     threshold: 0
