@@ -127,7 +127,10 @@ func initHandlers(handlerParams []config.Params, b *broadcast.Broadcast) ([]hand
 			return nil, err
 		}
 
-		handler.Init()
+		err = handler.Init()
+		if err != nil {
+			return nil, err
+		}
 
 		b.AddReceiver(c)
 		handlers = append(handlers, handler)

@@ -9,7 +9,6 @@ package handler
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 
 	"github.com/chrisbdaemon/beartrap/alert"
@@ -37,9 +36,7 @@ type BaseHandler struct {
 // Start the underlying alert handler loop
 func (handler *BaseHandler) Start() {
 	for {
-		log.Println("Checking for alerts")
 		a := <-handler.receiver
-		log.Println("Got one")
 		handler.h.HandleAlert(a)
 	}
 }
