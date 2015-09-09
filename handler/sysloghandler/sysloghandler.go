@@ -9,7 +9,6 @@ package sysloghandler
 
 import (
 	"fmt"
-	"log"
 	"log/syslog"
 	"strconv"
 	"strings"
@@ -51,7 +50,6 @@ var syslogPriorityMap = map[string]syslog.Priority{
 // base handler's Start() method
 func (sh *SyslogHandler) Start() {
 	// Fire up any necessary connections.. hand reigns over to baseHandler
-	log.Println("Firing base start()")
 	sh.baseHandler.Start()
 }
 
