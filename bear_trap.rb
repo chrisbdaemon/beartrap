@@ -80,6 +80,9 @@ class BearTrap
 		Thread.new {
 			sleep(3)
 			@blocked_addresses.delete ip
+			@alert_handlers.each do |f|
+				f.unblock_address( ip )
+			end
 		}
 		
 		@alert_handlers.each do |f|
