@@ -16,13 +16,13 @@ triggers:
 
    # Common port to scan
    #- type: TCPPort
-   #   port: 8080
-   #   address: 0.0.0.0
+   #  port: 8080
+   #  address: 0.0.0.0
 
    # Imitate Microsoft terminal services
-   # - type: TCPPort
-   #   port: 3389
-   #   address: 0.0.0.0
+   #- type: TCPPort
+   #  port: 3389
+   #  address: 0.0.0.0
 
    # Use semi-interactive ftp trigger
    # This trigger very faintly emulates an FTP service, when a USER command
@@ -47,6 +47,8 @@ alert_handlers:
   #     replaced with blacklisted address after it has been sanitized.  Use
   #     $RAW_IP to bypass sanitization (NOT RECOMMENDED)
   #   unblock_command: Reverse of block_command, same details
+  #   action_command: An optional command to execute on block. Can be used to write
+  # 	to a log file or execute python scripts
   #   regexp: regexp string used to sanitize IP address.  Matched characters
   #     will be removed.  Default is /[^\.0-9]/ [OPTIONAL]
 
@@ -54,6 +56,7 @@ alert_handlers:
   # offending addresses.
   - type: Commandline
     block_command: "/sbin/iptables -A INPUT -s $IP -j DROP"
+    action_command: "/bin/echo $IP >> bans.txt"
     unblock_command: "/sbin/iptables -D INPUT -s $IP -j DROP"
 
   # Example: PF using a blacklist table titled "blacklist".  Requires a line

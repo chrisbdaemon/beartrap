@@ -78,8 +78,11 @@ class BearTrap
 		
 		# After 3 seconds, remove the address
 		Thread.new {
-			sleep(3)
+			sleep($opt['t'])
 			@blocked_addresses.delete ip
+			@alert_handlers.each do |f|
+				f.unblock_address( ip )
+			end
 		}
 		
 		@alert_handlers.each do |f|
@@ -107,18 +110,31 @@ def usage
 	$stderr.puts '  --config  -c <config file>    Filename to load configuration from [REQUIRED]'
 	$stderr.puts '  --verbose -v                  Verbose output'
 	$stderr.puts '  --debug   -d                  Debug output (very noisy)'
+ 	$stderr.puts '  --timeout -t                  Ban timeout in seconds'
 	exit
 end
 
 $opt = Getopt::Long.getopts(
-	['--config', '-c', Getopt::REQUIRED],
+	['--config',  '-c', Getopt::REQUIRED],
 	['--verbose', '-v', Getopt::BOOLEAN],
-	['--debug', '-d']
+        ['--debug',   '-d'],
+        ['--timeout', '-t', Getopt::OPTIONAL]
 )
 
 if $opt['c'] == nil
 	usage()
 end
+
+begin
+	if $opt['t'] != nil
+		$opt['t'] = Integer($opt['t'])
+	else
+		$opt['t'] = 3
+	end
+	rescue ArgumentError
+		$opt['t'] = 3
+	end
+
 
 config = YAML::load( File.open( $opt[ 'c' ] ) )
 
