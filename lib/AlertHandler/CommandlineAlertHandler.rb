@@ -51,6 +51,7 @@ class CommandlineAlertHandler < AlertHandler
 		command = self.build_command( @block_command, address )
 
 		puts "Command: #{command}"
+		`#{command}`
 
 		unless $?.success?
 			puts "Command failed with status #{$?.exitstatus}"
