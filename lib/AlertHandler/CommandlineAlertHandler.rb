@@ -29,6 +29,7 @@ class CommandlineAlertHandler < AlertHandler
 
 		@parameters = [ { 'name' => 'block_command', 'required' => true },
 		                { 'name' => 'unblock_command', 'required' => true },
+		                { 'name' => 'action_command', 'required' => false },
 		                { 'name' => 'regexp', 'required' => false } ]
 
 		self.check_parameters( params )
@@ -36,7 +37,11 @@ class CommandlineAlertHandler < AlertHandler
 		@block_command    = params[ 'block_command' ]
 		@unblock_command  = params[ 'unblock_command' ]
 
-		if params.keys.include? 'regexp' && params[ 'regexp' ] != nil
+		if params[ 'action_command' ] != nil
+			@action_command = params[ 'action_command' ]
+		end		
+
+		if params[ 'regexp' ] != nil
 			regexp_str = params[ 'regexp' ]
 		else
 			regexp_str = '[^\.0-9]'
@@ -48,15 +53,26 @@ class CommandlineAlertHandler < AlertHandler
 
 	def handle_alert( address )
 
-		command = self.build_command( @block_command, address )
+		block_command = self.build_command( @block_command, address )
+		action_command = self.build_command( @action_command, address )
 
-		puts "Command: #{command}"
-		`#{command}`
+		if defined? @action_command
+	
+			puts "Command: #{action_command}"
+			`#{action_command}`
+
+			unless $?.success?
+				puts "Command failed with status #{$?.exitstatus}"
+			end		
+
+		end
+
+		puts "Command: #{block_command}"
+		`#{block_command}`
 
 		unless $?.success?
 			puts "Command failed with status #{$?.exitstatus}"
-		end
-
+		end		
 	end
 
 	def unblock_address( address )
