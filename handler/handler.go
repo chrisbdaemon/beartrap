@@ -9,11 +9,9 @@ package handler
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/chrisbdaemon/beartrap/alert"
 	"github.com/chrisbdaemon/beartrap/config"
-	"github.com/chrisbdaemon/beartrap/config/validate"
 	"github.com/chrisbdaemon/beartrap/handler/sysloghandler"
 )
 
@@ -27,10 +25,9 @@ type Interface interface {
 
 // BaseHandler holds data common to all handler types
 type BaseHandler struct {
-	Threshold int
-	h         Interface
-	receiver  chan alert.Alert
-	params    config.Params
+	h        Interface
+	receiver chan alert.Alert
+	params   config.Params
 }
 
 // Start the underlying alert handler loop
@@ -58,9 +55,6 @@ func New(params config.Params, alertChan chan alert.Alert) (Interface, error) {
 
 	baseHandler.h = handler
 
-	// will validate later *crosses fingers*
-	baseHandler.Threshold, _ = strconv.Atoi(params["threshold"])
-
 	return handler, nil
 }
 
@@ -68,12 +62,7 @@ func New(params config.Params, alertChan chan alert.Alert) (Interface, error) {
 func (handler *BaseHandler) Validate() []error {
 	errors := []error{}
 
-	switch err := validate.Int(handler.params["threshold"]); {
-	case err != nil:
-		errors = append(errors, fmt.Errorf("Invalid threshold: %s", err))
-	case handler.Threshold < 0:
-		errors = append(errors, fmt.Errorf("Threshold cannot be negative"))
-	}
+	// Test any parameters here
 
 	return errors
 }

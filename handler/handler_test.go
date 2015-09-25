@@ -19,8 +19,7 @@ import (
 func TestNew(t *testing.T) {
 	c := make(chan alert.Alert)
 	params := config.Params{
-		"type":      "syslog",
-		"threshold": "3",
+		"type": "syslog",
 	}
 
 	handler, _ := New(params, c)
@@ -29,16 +28,9 @@ func TestNew(t *testing.T) {
 
 func TestValidate(t *testing.T) {
 	handler := new(BaseHandler)
-	handler.params = config.Params{
-		"threshold": "3",
-	}
+	handler.params = config.Params{}
 
 	errors := handler.Validate()
 	log.Println(errors)
 	assert.Equal(t, 0, len(errors))
-
-	// return error for invalid severity
-	handler.params["threshold"] = "five"
-	errors = handler.Validate()
-	assert.Equal(t, 1, len(errors))
 }
